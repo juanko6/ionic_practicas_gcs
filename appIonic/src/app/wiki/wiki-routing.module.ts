@@ -8,7 +8,7 @@ const routes: Routes = [
     component: WikiPage,
   },
   {
-    path: ':category/:id',
+    path: 'article/:cat/:id',
     loadChildren: () =>
       import('../article/article.module').then(m => m.ArticlePageModule),
   },

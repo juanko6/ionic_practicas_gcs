@@ -41,12 +41,13 @@ export class FavoritesPage {
 
   /**
    * Construye la ruta dinámica al detalle de un artículo guardado.
-   * Formato: `/tabs/wiki/<category>/<id>` (ej.: `/tabs/wiki/people/1`).
+   * Sigue la convención unificada con `wiki-routing.module.ts`:
+   * `/tabs/wiki/article/<cat>/<id>` (ej.: `/tabs/wiki/article/Planets/1`).
    * @param article Favorito desde el que generar la ruta.
    * @returns Cadena de ruta lista para usar como `href` / `routerLink`.
    */
   generateURL(article: FavoriteArticle): string {
-    return `/tabs/wiki/${article.category}/${article.id}`;
+    return `/tabs/wiki/article/${article.category}/${article.id}`;
   }
 
   /**

@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/tabs/wiki"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ name || 'Artículo' }}</ion-title>
+    <ion-title>{{ title }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="toggleFavorite()" aria-label="Favorito">
         <ion-icon
@@ -16,35 +16,153 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div *ngIf="loading" class="loading">
-    <ion-spinner name="dots"></ion-spinner>
-    <p>Cargando artículo…</p>
-  </div>
-
-  <ion-card *ngIf="!loading && properties">
+  <ion-card>
     <ion-card-header>
-      <ion-card-subtitle>{{ category }}</ion-card-subtitle>
-      <ion-card-title>{{ name }}</ion-card-title>
+      <ion-card-title>Facts about {{ title }}</ion-card-title>
     </ion-card-header>
-    <ion-card-content>
-      <ion-list>
-        <ion-item *ngFor="let prop of displayProperties" lines="inset">
-          <ion-label class="ion-text-wrap">
-            <h3>{{ prop.key }}</h3>
-            <p>{{ prop.value }}</p>
-          </ion-label>
+
+    <ion-card-content [ngSwitch]="category">
+      <ion-list *ngSwitchCase="'People'">
+        <ion-item>
+          <strong>Height:</strong>
+          <ion-badge slot="end">{{ people.height }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Mass:</strong>
+          <ion-badge slot="end">{{ people.mass }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Hair color:</strong>
+          <ion-badge slot="end">{{ people.hair_color }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Skin color:</strong>
+          <ion-badge slot="end">{{ people.skin_color }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Eye color:</strong>
+          <ion-badge slot="end">{{ people.eye_color }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Birth year:</strong>
+          <ion-badge slot="end">{{ people.birth_year }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Gender:</strong>
+          <ion-badge slot="end">{{ people.gender }}</ion-badge>
         </ion-item>
       </ion-list>
-    </ion-card-content>
-  </ion-card>
 
-  <ion-card *ngIf="!loading && !properties">
-    <ion-card-header>
-      <ion-card-title>Artículo no disponible</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      No se pudo recuperar el detalle desde SWAPI. Comprueba la conexión
-      e inténtalo de nuevo más tarde.
+      <ion-list *ngSwitchCase="'Planets'">
+        <ion-item>
+          <strong>Climate:</strong>
+          <ion-badge slot="end">{{ planet.climate }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Diameter:</strong>
+          <ion-badge slot="end">{{ planet.diameter }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Gravity:</strong>
+          <ion-badge slot="end">{{ planet.gravity }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Orbital period:</strong>
+          <ion-badge slot="end">{{ planet.orbital_period }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Population:</strong>
+          <ion-badge slot="end">{{ planet.population }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Rotation period:</strong>
+          <ion-badge slot="end">{{ planet.rotation_period }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Surface water:</strong>
+          <ion-badge slot="end">{{ planet.surface_water }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Terrain:</strong>
+          <ion-badge slot="end">{{ planet.terrain }}</ion-badge>
+        </ion-item>
+      </ion-list>
+
+      <ion-list *ngSwitchCase="'Species'">
+        <ion-item>
+          <strong>Classification:</strong>
+          <ion-badge slot="end">{{ species.classification }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Designation:</strong>
+          <ion-badge slot="end">{{ species.designation }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Average height:</strong>
+          <ion-badge slot="end">{{ species.average_height }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Average lifespan:</strong>
+          <ion-badge slot="end">{{ species.average_lifespan }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Eye colors:</strong>
+          <ion-badge slot="end">{{ species.eye_colors }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Hair colors:</strong>
+          <ion-badge slot="end">{{ species.hair_colors }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Skin colors:</strong>
+          <ion-badge slot="end">{{ species.skin_colors }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Language:</strong>
+          <ion-badge slot="end">{{ species.language }}</ion-badge>
+        </ion-item>
+      </ion-list>
+
+      <ion-list *ngSwitchCase="'Starships'">
+        <ion-item>
+          <strong>Model:</strong>
+          <ion-badge slot="end">{{ starship.model }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Manufacturer:</strong>
+          <ion-badge slot="end">{{ starship.manufacturer }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Class:</strong>
+          <ion-badge slot="end">{{ starship.starship_class }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Length:</strong>
+          <ion-badge slot="end">{{ starship.length }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Crew:</strong>
+          <ion-badge slot="end">{{ starship.crew }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Passengers:</strong>
+          <ion-badge slot="end">{{ starship.passengers }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Cargo capacity:</strong>
+          <ion-badge slot="end">{{ starship.cargo_capacity }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Hyperdrive rating:</strong>
+          <ion-badge slot="end">{{ starship.hyperdrive_rating }}</ion-badge>
+        </ion-item>
+        <ion-item>
+          <strong>Cost in credits:</strong>
+          <ion-badge slot="end">{{ starship.cost_in_credits }}</ion-badge>
+        </ion-item>
+      </ion-list>
+
+      <p *ngSwitchDefault>Categoría desconocida: {{ category }}</p>
     </ion-card-content>
   </ion-card>
 </ion-content>

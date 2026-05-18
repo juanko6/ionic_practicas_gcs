@@ -1,13 +1,14 @@
 /**
- * Categorías soportadas por SWAPI que se persisten como favoritos.
- * Coincide con los valores de `Category.url` (sin la barra final).
+ * Categorías SWAPI tal como aparecen en la URL del detalle
+ * (`/tabs/wiki/article/<cat>/<id>`) y en el switch de `ArticlePage`.
+ * Se mantienen capitalizadas para coincidir con `Category.name`.
  */
-export type SwapiCategory = 'people' | 'planets' | 'species' | 'starships';
+export type SwapiCategory = 'People' | 'Planets' | 'Species' | 'Starships';
 
 /**
  * Estructura mínima de un recurso devuelto por SWAPI v2 dentro de
  * `results`. SWAPI devuelve más metadatos (`uid`, `url`, etc.) pero
- * solo necesitamos los campos identificativos para los favoritos.
+ * solo necesitamos los campos identificativos para favoritos.
  */
 export interface SwapiResource {
   uid: string;
@@ -24,6 +25,6 @@ export interface FavoriteArticle {
   id: string;
   /** Nombre del recurso para mostrarlo en la UI sin necesidad de re-fetch. */
   name: string;
-  /** Categoría a la que pertenece. */
-  category: SwapiCategory;
+  /** Categoría a la que pertenece (formato `People`, `Planets`, ...). */
+  category: string;
 }

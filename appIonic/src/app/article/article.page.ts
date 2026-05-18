@@ -1,24 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { StorageService } from '../services/storage.service';
+
+import { People } from '../models/People';
+import { Planet } from '../models/Planet';
+import { Species } from '../models/Species';
+import { Starship } from '../models/Starship';
+import { FavoriteArticle } from '../models/Article';
 import { WikiService } from '../services/wiki.service';
-import {
-  FavoriteArticle,
-  SwapiCategory,
-} from '../models/Article';
+import { StorageService } from '../services/storage.service';
 
 /** Clave bajo la que se persiste la lista de favoritos. */
 const FAVORITES_KEY = 'favorites';
 
 /**
- * Detalle de un recurso de SWAPI (un person, planet, species o starship).
+ * Página de detalle de un recurso de SWAPI.
  *
- * Esta página combina:
- *  - Carga del recurso vía `WikiService`.
- *  - Determinación inicial de `isFavorite` consultando `StorageService`.
- *  - Toggle de favorito que actualiza el array persistido y muestra un
- *    `Toast` confirmando la acción.
+ * Lee `:cat/:id` de la ruta, recupera el recurso vía `WikiService` y lo
+ * deserializa en el modelo tipado correspondiente (`People`, `Planet`,
+ * `Species`, `Starship`). Además, consulta `StorageService` para
+ * determinar si está marcado como favorito y expone `toggleFavorite()`
+ * para alternar el estado y notificar con un `Toast`.
  */
 @Component({
   selector: 'app-article',
@@ -27,64 +29,71 @@ const FAVORITES_KEY = 'favorites';
   standalone: false,
 })
 export class ArticlePage implements OnInit {
-  /** Identificador del recurso dentro de su categoría (uid de SWAPI). */
+  /** Título visible en la cabecera y en la card. */
+  title: string = '';
+  /** Identificador (uid) del recurso. */
   id: string = '';
-  /** Categoría a la que pertenece el recurso. */
-  category: SwapiCategory = 'people';
-  /** Nombre legible del recurso, mostrado en el header del detalle. */
-  name: string = '';
-  /** Propiedades arbitrarias devueltas por SWAPI para este recurso. */
-  properties: Record<string, unknown> | null = null;
-  /** Indica si el recurso actual está marcado como favorito. */
+  /** Categoría tal como llega en la URL (`People`, `Planets`, ...). */
+  category: string = '';
+  /** Indica si el recurso está marcado como favorito. */
   isFavorite: boolean = false;
-  /** Bandera para mostrar el spinner mientras se carga el recurso. */
-  loading: boolean = true;
+
+  people: People = new People();
+  planet: Planet = new Planet();
+  species: Species = new Species();
+  starship: Starship = new Starship();
 
   constructor(
     private route: ActivatedRoute,
-    private wikiSrv: WikiService,
+    private srv: WikiService,
     private storage: StorageService,
     private toastCtrl: ToastController
   ) {}
 
   /**
-   * Ciclo de vida Angular. Lee los parámetros de ruta, recupera el
-   * recurso desde SWAPI y comprueba si está en favoritos.
-   * @returns Promesa que resuelve cuando la página está poblada.
+   * Lee los parámetros de ruta, descarga el detalle desde SWAPI y
+   * actualiza `isFavorite` consultando el storage.
+   * @returns void — el resultado es la actualización de las propiedades.
    */
-  async ngOnInit(): Promise<void> {
-    this.category = this.route.snapshot.paramMap.get('category') as SwapiCategory;
+  ngOnInit(): void {
+    this.category = this.route.snapshot.paramMap.get('cat') ?? '';
     this.id = this.route.snapshot.paramMap.get('id') ?? '';
-    await this.fetchArticle();
-    await this.refreshFavoriteFlag();
+
+    this.srv.getArticle(this.category, this.id).subscribe((result: any) => {
+      const properties = result?.result?.properties;
+      if (!properties) {
+        return;
+      }
+      switch (this.category) {
+        case 'People':
+          this.people = properties;
+          this.title = this.people.name;
+          break;
+        case 'Planets':
+          this.planet = properties;
+          this.title = this.planet.name;
+          break;
+        case 'Species':
+          this.species = properties;
+          this.title = this.species.name;
+          break;
+        case 'Starships':
+          this.starship = properties;
+          this.title = this.starship.name;
+          break;
+      }
+      // Una vez tenemos el título podemos persistirlo si se marca favorito
+      this.refreshFavoriteFlag();
+    });
+
+    // Pre-cálculo inmediato para que el icono refleje el estado aunque
+    // SWAPI aún no haya respondido.
+    this.refreshFavoriteFlag();
   }
 
   /**
-   * Recupera el detalle del recurso desde SWAPI.
-   * Si la API falla, deja `properties` a `null` y `loading` a `false`
-   * para que la vista muestre un mensaje en lugar de quedarse colgada.
-   * @returns Promesa que resuelve cuando termina el fetch.
-   */
-  private async fetchArticle(): Promise<void> {
-    this.loading = true;
-    try {
-      const result: any = await this.wikiSrv
-        .getArticle(this.category, this.id)
-        .toPromise();
-      // SWAPI v2 devuelve { result: { properties, uid, description } }
-      this.properties = result?.result?.properties ?? null;
-      this.name = (this.properties as any)?.name ?? this.id;
-    } catch (err) {
-      console.error('No se pudo cargar el artículo', err);
-      this.properties = null;
-    } finally {
-      this.loading = false;
-    }
-  }
-
-  /**
-   * Recalcula `isFavorite` consultando el array persistido.
-   * La combinación `id + category` es la clave única.
+   * Recalcula `isFavorite` leyendo el array persistido y buscando por
+   * la combinación única `id + category`.
    * @returns Promesa que resuelve cuando `isFavorite` está actualizado.
    */
   private async refreshFavoriteFlag(): Promise<void> {
@@ -96,10 +105,10 @@ export class ArticlePage implements OnInit {
 
   /**
    * Alterna el estado de favorito del recurso actual:
-   *  - Si existe (mismo id + category) → lo elimina del array.
-   *  - Si no existe → lo añade con `id`, `name` y `category`.
-   * Persiste el array y notifica con un `Toast`.
-   * @returns Promesa que resuelve tras persistir y mostrar el toast.
+   *  - Si ya existe (mismo `id + category`), lo elimina del array.
+   *  - Si no existe, lo añade con `id`, `name` y `category`.
+   * Persiste el array actualizado y muestra un `Toast` informativo.
+   * @returns Promesa que resuelve tras persistir y presentar el toast.
    */
   async toggleFavorite(): Promise<void> {
     const favorites = (await this.storage.get<FavoriteArticle[]>(FAVORITES_KEY)) ?? [];
@@ -115,7 +124,7 @@ export class ArticlePage implements OnInit {
     } else {
       favorites.push({
         id: this.id,
-        name: this.name || this.id,
+        name: this.title || this.id,
         category: this.category,
       });
       this.isFavorite = true;
@@ -130,19 +139,5 @@ export class ArticlePage implements OnInit {
       color: 'dark',
     });
     await toast.present();
-  }
-
-  /**
-   * Devuelve los pares clave/valor del recurso para iterar en el template.
-   * Filtra entradas no primitivas (arrays/objetos) para no romper el render.
-   * @returns Lista de pares legibles ordenados.
-   */
-  get displayProperties(): Array<{ key: string; value: string }> {
-    if (!this.properties) {
-      return [];
-    }
-    return Object.entries(this.properties)
-      .filter(([, v]) => typeof v === 'string' || typeof v === 'number')
-      .map(([key, value]) => ({ key, value: String(value) }));
   }
 }

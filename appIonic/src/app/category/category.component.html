@@ -16,7 +16,7 @@
     button
     detail="true"
     lines="inset"
-    [routerLink]="['/tabs/wiki', categoryRoute, article.uid]"
+    [href]="generateURL(theCategory.name, article.uid)"
   >
     <ion-label>{{ article.name }}</ion-label>
   </ion-item>
