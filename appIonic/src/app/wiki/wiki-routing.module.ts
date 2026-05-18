@@ -6,6 +6,11 @@ const routes: Routes = [
   {
     path: '',
     component: WikiPage,
+  },
+  {
+    path: 'article/:cat/:id',
+    loadChildren: () =>
+      import('../article/article.module').then(m => m.ArticlePageModule),
   }
 ];
 

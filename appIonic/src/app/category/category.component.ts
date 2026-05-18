@@ -29,4 +29,8 @@ export class CategoryComponent implements OnInit {
     this.clicked.emit(this.theCategory.name);
     this.getArticles(this.theCategory.name);
   }
+
+  generateURL(cat: string, id: string): string {
+    return '/tabs/wiki/article/' + cat + '/' + id;
+  }
 }
