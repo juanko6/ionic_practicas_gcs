@@ -1,0 +1,163 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Register</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Nombre</ion-label>
+        <ion-input type="text" formControlName="firstName"></ion-input>
+      </ion-item>
+      <div
+        *ngIf="f['firstName'].invalid && (f['firstName'].dirty || f['firstName'].touched || submitted)"
+        class="alert alert-danger"
+      >
+        <p *ngIf="f['firstName'].hasError('required')">El nombre es obligatorio.</p>
+        <p *ngIf="f['firstName'].hasError('minlength')">Mínimo 2 caracteres.</p>
+        <p *ngIf="f['firstName'].hasError('forbiddenName')">
+          El nombre "admin" no está permitido.
+        </p>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Apellidos</ion-label>
+        <ion-input type="text" formControlName="lastName"></ion-input>
+      </ion-item>
+      <div
+        *ngIf="f['lastName'].invalid && (f['lastName'].dirty || f['lastName'].touched || submitted)"
+        class="alert alert-danger"
+      >
+        <p *ngIf="f['lastName'].hasError('required')">Los apellidos son obligatorios.</p>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input type="email" formControlName="email" autocomplete="email"></ion-input>
+      </ion-item>
+      <div
+        *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched || submitted)"
+        class="alert alert-danger"
+      >
+        <p *ngIf="f['email'].hasError('required')">El email es obligatorio.</p>
+        <p *ngIf="f['email'].hasError('email')">Formato de email no válido.</p>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Contraseña</ion-label>
+        <ion-input
+          type="password"
+          formControlName="password"
+          autocomplete="new-password"
+        ></ion-input>
+      </ion-item>
+      <div
+        *ngIf="f['password'].invalid && (f['password'].dirty || f['password'].touched || submitted)"
+        class="alert alert-danger"
+      >
+        <p *ngIf="f['password'].hasError('required')">La contraseña es obligatoria.</p>
+        <p *ngIf="f['password'].hasError('minlength')">Mínimo 8 caracteres.</p>
+        <p *ngIf="f['password'].hasError('pattern')">
+          Debe contener al menos una letra y un dígito.
+        </p>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Confirmar contraseña</ion-label>
+        <ion-input
+          type="password"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+        ></ion-input>
+      </ion-item>
+      <div
+        *ngIf="
+          (f['confirmPassword'].dirty || f['confirmPassword'].touched || submitted) &&
+          (f['confirmPassword'].hasError('required') || registerForm.hasError('mismatch'))
+        "
+        class="alert alert-danger"
+      >
+        <p *ngIf="f['confirmPassword'].hasError('required')">
+          Confirma la contraseña.
+        </p>
+        <p
+          *ngIf="
+            !f['confirmPassword'].hasError('required') && registerForm.hasError('mismatch')
+          "
+        >
+          Las contraseñas no coinciden.
+        </p>
+      </div>
+
+      <!-- FormArray dinámico de aliases -->
+      <ion-list-header>
+        <ion-label>Aliases</ion-label>
+      </ion-list-header>
+      <div formArrayName="aliases">
+        <ion-item *ngFor="let alias of aliases.controls; let i = index">
+          <ion-label position="stacked">Alias {{ i + 1 }}</ion-label>
+          <ion-input type="text" [formControlName]="i"></ion-input>
+          <ion-button
+            slot="end"
+            color="medium"
+            fill="clear"
+            type="button"
+            (click)="removeAlias(i)"
+            [disabled]="aliases.length <= 1"
+          >
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </div>
+      <ion-button
+        size="small"
+        fill="outline"
+        type="button"
+        (click)="addAlias()"
+        class="add-alias-btn"
+      >
+        <ion-icon slot="start" name="add"></ion-icon>
+        Añadir alias
+      </ion-button>
+
+      <ion-item lines="none">
+        <ion-checkbox slot="start" formControlName="termsAccepted"></ion-checkbox>
+        <ion-label class="ion-text-wrap">Acepto los términos y condiciones</ion-label>
+      </ion-item>
+      <div
+        *ngIf="
+          f['termsAccepted'].invalid &&
+          (f['termsAccepted'].dirty || f['termsAccepted'].touched || submitted)
+        "
+        class="alert alert-danger"
+      >
+        <p>Debes aceptar los términos para continuar.</p>
+      </div>
+    </ion-list>
+
+    <div class="form-actions">
+      <ion-button expand="block" type="submit" [disabled]="!registerForm.valid">
+        Registrarme
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="medium" type="button" (click)="reset()">
+        Limpiar
+      </ion-button>
+    </div>
+  </form>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Estado del formulario (debug)</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>valid:</strong> {{ registerForm.valid }}</p>
+      <p><strong>mismatch group error:</strong> {{ registerForm.hasError('mismatch') }}</p>
+      <p><strong>value:</strong></p>
+      <pre>{{ registerForm.value | json }}</pre>
+      <p *ngIf="lastSubmittedValue"><strong>Último submit:</strong></p>
+      <pre *ngIf="lastSubmittedValue">{{ lastSubmittedValue | json }}</pre>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
