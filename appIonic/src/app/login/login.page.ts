@@ -1,7 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MenuController } from '@ionic/angular';
+import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
+import { UserService } from '../services/user.service';
+
+/**
+ * Página de inicio de sesión.
+ *
+ * Cumple los requisitos literales del cuaderno de la Práctica 3:
+ *  - `FormBuilder` y `Router` inyectados.
+ *  - Propiedad `formLogin` con dos controles (email + clave).
+ *  - Variable `error: string` para los mensajes de credenciales
+ *    incorrectas.
+ *  - Método `doLogin()` que invoca `UserService.login()` y, según el
+ *    resultado, navega a la ruta `tabs` o asigna el mensaje de error.
+ */
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -9,56 +22,55 @@ import { MenuController } from '@ionic/angular';
   standalone: false,
 })
 export class LoginPage implements OnInit {
-  loginForm!: FormGroup;
-  submitted = false;
-  lastSubmittedValue: any = null;
+  /** Formulario reactivo (`any` según la convención del cuaderno). */
+  formLogin: any;
 
-  constructor(private fb: FormBuilder, private menuCtrl: MenuController) {}
+  /** Mensaje mostrado en el `<ion-alert>` cuando el login falla. */
+  error: string = '';
 
-  ngOnInit() {
-    this.loginForm = this.fb.group({
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private userSrv: UserService
+  ) {}
+
+  /**
+   * Construye el formulario reactivo con los validadores exigidos:
+   *  - email: requerido + formato email.
+   *  - clave: requerida + mínimo 6 caracteres.
+   * @returns void
+   */
+  ngOnInit(): void {
+    this.formLogin = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      remember: [false]
     });
   }
 
   /**
-   * Hook de Ionic ejecutado justo antes de mostrar la vista.
-   * Desactiva el menú lateral mientras el usuario no esté autenticado.
-   * @returns void
+   * Handler del botón de envío. Toma los valores del formulario,
+   * pregunta a `UserService` y, en función del resultado:
+   *  - Si devuelve un `User` válido → navega a `/tabs`.
+   *  - Si devuelve `null` → asigna mensaje de error que disparará
+   *    el `<ion-alert>` del template.
+   * @returns Promesa que resuelve tras la navegación o tras asignar el error.
    */
-  ionViewWillEnter(): void {
-    this.menuCtrl.enable(false, 'principal');
+  async doLogin(): Promise<void> {
+    const { email, password } = this.formLogin.value;
+    const user = await this.userSrv.login(email, password);
+    if (user) {
+      this.error = '';
+      await this.router.navigateByUrl('/tabs');
+    } else {
+      this.error = 'Email o contraseña incorrectos.';
+    }
   }
 
   /**
-   * Re-habilita el menú al salir de la pantalla de login para no
-   * dejar el menú bloqueado si el usuario navega a otra ruta.
+   * Cierra el `<ion-alert>` vaciando la variable de error.
    * @returns void
    */
-  ionViewWillLeave(): void {
-    this.menuCtrl.enable(true, 'principal');
-  }
-
-  // Acceso rápido a los controles para usar en el template
-  get f() {
-    return this.loginForm.controls;
-  }
-
-  onSubmit() {
-    this.submitted = true;
-    if (this.loginForm.invalid) {
-      return;
-    }
-    // Snapshot inmutable del estado en el momento del envío
-    this.lastSubmittedValue = this.loginForm.value;
-    console.warn('Login submit:', this.lastSubmittedValue);
-  }
-
-  reset() {
-    this.submitted = false;
-    this.lastSubmittedValue = null;
-    this.loginForm.reset({ email: '', password: '', remember: false });
+  dismissError(): void {
+    this.error = '';
   }
 }

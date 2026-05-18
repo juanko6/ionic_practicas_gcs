@@ -9,44 +9,46 @@ const routes: Routes = [
     children: [
       {
         path: 'wiki',
-        loadChildren: () => import('../wiki/wiki.module').then(m => m.WikiPageModule)
+        loadChildren: () =>
+          import('../wiki/wiki.module').then(m => m.WikiPageModule),
       },
       {
         path: 'favorites',
-        loadChildren: () => import('../favorites/favorites.module').then(m => m.FavoritesPageModule)
-      },
-      {
-        path: 'login',
-        loadChildren: () => import('../login/login.module').then(m => m.LoginPageModule)
+        loadChildren: () =>
+          import('../favorites/favorites.module').then(m => m.FavoritesPageModule),
       },
       {
         path: 'register',
-        loadChildren: () => import('../register/register.module').then(m => m.RegisterPageModule)
+        loadChildren: () =>
+          import('../register/register.module').then(m => m.RegisterPageModule),
       },
       {
         path: 'profile',
-        loadChildren: () => import('../profile/profile.module').then(m => m.ProfilePageModule)
+        loadChildren: () =>
+          import('../profile/profile.module').then(m => m.ProfilePageModule),
       },
       {
         path: 'about',
-        loadChildren: () => import('../about/about.module').then(m => m.AboutPageModule)
+        loadChildren: () =>
+          import('../about/about.module').then(m => m.AboutPageModule),
       },
       {
         path: 'exit',
-        loadChildren: () => import('../exit/exit.module').then(m => m.ExitPageModule)
+        loadChildren: () =>
+          import('../exit/exit.module').then(m => m.ExitPageModule),
       },
       {
         path: '',
         redirectTo: '/tabs/wiki',
-        pathMatch: 'full'
-      }
-    ]
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: '',
     redirectTo: '/tabs/wiki',
-    pathMatch: 'full'
-  }
+    pathMatch: 'full',
+  },
 ];
 
 @NgModule({
