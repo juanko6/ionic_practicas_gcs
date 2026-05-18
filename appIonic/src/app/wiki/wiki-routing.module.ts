@@ -11,7 +11,7 @@ const routes: Routes = [
     path: 'article/:cat/:id',
     loadChildren: () =>
       import('../article/article.module').then(m => m.ArticlePageModule),
-  }
+  },
 ];
 
 @NgModule({

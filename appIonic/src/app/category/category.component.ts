@@ -19,17 +19,34 @@ export class CategoryComponent implements OnInit {
 
   ngOnInit() {}
 
-  getArticles(category: string) {
+  /**
+   * Recupera el listado de artículos de la categoría desde SWAPI.
+   * @param category Categoría seleccionada (ej. "People").
+   * @returns void — el resultado se asigna a `this.articles`.
+   */
+  getArticles(category: string): void {
     this.wikiSrv.getAllArticles(category).subscribe((result: any) => {
       this.articles = result.results;
     });
   }
 
-  click() {
+  /**
+   * Notifica al padre del cambio de selección y dispara la carga de
+   * artículos de la categoría actual.
+   * @returns void
+   */
+  click(): void {
     this.clicked.emit(this.theCategory.name);
     this.getArticles(this.theCategory.name);
   }
 
+  /**
+   * Construye la URL al detalle de un artículo concreto, usando la
+   * convención fijada en `wiki-routing.module.ts` (`article/:cat/:id`).
+   * @param cat Nombre de la categoría tal como viene de `Category.name`.
+   * @param id Identificador (uid) del recurso en SWAPI.
+   * @returns Ruta absoluta lista para usar como `href`.
+   */
   generateURL(cat: string, id: string): string {
     return '/tabs/wiki/article/' + cat + '/' + id;
   }
