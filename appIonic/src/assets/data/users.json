@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Luke Skywalker",
+    "email": "luke@rebellion.com",
+    "password": "useTheForce"
+  },
+  {
+    "name": "Leia Organa",
+    "email": "leia@rebellion.com",
+    "password": "alderaan123"
+  },
+  {
+    "name": "Han Solo",
+    "email": "han@millenium.com",
+    "password": "chewie456"
+  }
+]
