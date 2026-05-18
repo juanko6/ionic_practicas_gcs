@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/wiki"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ name || 'Artículo' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleFavorite()" aria-label="Favorito">
+        <ion-icon
+          slot="icon-only"
+          [name]="isFavorite ? 'star' : 'star-outline'"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div *ngIf="loading" class="loading">
+    <ion-spinner name="dots"></ion-spinner>
+    <p>Cargando artículo…</p>
+  </div>
+
+  <ion-card *ngIf="!loading && properties">
+    <ion-card-header>
+      <ion-card-subtitle>{{ category }}</ion-card-subtitle>
+      <ion-card-title>{{ name }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let prop of displayProperties" lines="inset">
+          <ion-label class="ion-text-wrap">
+            <h3>{{ prop.key }}</h3>
+            <p>{{ prop.value }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="!loading && !properties">
+    <ion-card-header>
+      <ion-card-title>Artículo no disponible</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      No se pudo recuperar el detalle desde SWAPI. Comprueba la conexión
+      e inténtalo de nuevo más tarde.
+    </ion-card-content>
+  </ion-card>
+</ion-content>

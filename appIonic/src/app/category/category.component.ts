@@ -19,6 +19,14 @@ export class CategoryComponent implements OnInit {
 
   ngOnInit() {}
 
+  /**
+   * Segmento de ruta normalizado de la categoría (people, planets, ...).
+   * Se usa como parámetro `:category` del routerLink al detalle.
+   */
+  get categoryRoute(): string {
+    return this.theCategory.name.toLowerCase();
+  }
+
   getArticles(category: string) {
     this.wikiSrv.getAllArticles(category).subscribe((result: any) => {
       this.articles = result.results;

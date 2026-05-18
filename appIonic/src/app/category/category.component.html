@@ -1,19 +1,23 @@
-<ion-item>
+<ion-item button (click)="click()" detail="false">
   <ion-avatar slot="start">
     <img [src]="'../../assets/images/categories/' + theCategory.image" />
   </ion-avatar>
   <ion-label>
     <h2>{{ theCategory.name }}</h2>
   </ion-label>
-  <ion-button float-right (click)="click()">
+  <ion-button slot="end" fill="clear" (click)="click(); $event.stopPropagation()">
     <ion-icon slot="icon-only" name="eye"></ion-icon>
   </ion-button>
 </ion-item>
 
-<ion-item *ngIf="selected">
-  <ion-list>
-    <ion-item *ngFor="let article of articles">
-      {{ article.name }}
-    </ion-item>
-  </ion-list>
-</ion-item>
+<ion-list *ngIf="selected" class="article-list">
+  <ion-item
+    *ngFor="let article of articles"
+    button
+    detail="true"
+    lines="inset"
+    [routerLink]="['/tabs/wiki', categoryRoute, article.uid]"
+  >
+    <ion-label>{{ article.name }}</ion-label>
+  </ion-item>
+</ion-list>

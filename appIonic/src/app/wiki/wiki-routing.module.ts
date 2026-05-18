@@ -6,7 +6,12 @@ const routes: Routes = [
   {
     path: '',
     component: WikiPage,
-  }
+  },
+  {
+    path: ':category/:id',
+    loadChildren: () =>
+      import('../article/article.module').then(m => m.ArticlePageModule),
+  },
 ];
 
 @NgModule({
