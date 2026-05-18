@@ -10,13 +10,11 @@
   </ion-list-header>
 
   <ion-list>
-    <ion-item *ngFor="let cat of categories">
-      <ion-avatar slot="start">
-        <img [src]="'../../assets/images/categories/' + cat + '.jpg'"/>
-      </ion-avatar>
-      <ion-label>
-        <h2>{{ cat }}</h2>
-      </ion-label>
-    </ion-item>
+    <app-category
+      *ngFor="let cat of categories"
+      [theCategory]="cat"
+      [selected]="selectedCategory === cat.name"
+      (clicked)="selectCategory($event)"
+    ></app-category>
   </ion-list>
 </ion-content>
