@@ -1,0 +1,82 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="profile-actions">
+    <ion-button size="small" fill="outline" type="button" (click)="loadFullProfile()">
+      Cargar perfil (setValue)
+    </ion-button>
+    <ion-button size="small" fill="outline" type="button" (click)="patchFirstName()">
+      Solo nombre (patchValue)
+    </ion-button>
+  </div>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" novalidate>
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Nombre</ion-label>
+        <ion-input type="text" formControlName="firstName"></ion-input>
+      </ion-item>
+      <div
+        *ngIf="f['firstName'].invalid && (f['firstName'].dirty || f['firstName'].touched || submitted)"
+        class="alert alert-danger"
+      >
+        <p *ngIf="f['firstName'].hasError('required')">El nombre es obligatorio.</p>
+        <p *ngIf="f['firstName'].hasError('minlength')">Mínimo 2 caracteres.</p>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Apellidos</ion-label>
+        <ion-input type="text" formControlName="lastName"></ion-input>
+      </ion-item>
+      <div
+        *ngIf="f['lastName'].invalid && (f['lastName'].dirty || f['lastName'].touched || submitted)"
+        class="alert alert-danger"
+      >
+        <p *ngIf="f['lastName'].hasError('required')">Los apellidos son obligatorios.</p>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input type="email" formControlName="email" autocomplete="email"></ion-input>
+      </ion-item>
+      <div
+        *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched || submitted)"
+        class="alert alert-danger"
+      >
+        <p *ngIf="f['email'].hasError('required')">El email es obligatorio.</p>
+        <p *ngIf="f['email'].hasError('email')">Formato de email no válido.</p>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Biografía</ion-label>
+        <ion-textarea rows="3" formControlName="bio"></ion-textarea>
+      </ion-item>
+    </ion-list>
+
+    <div class="form-actions">
+      <ion-button expand="block" type="submit" [disabled]="!profileForm.valid">
+        Guardar perfil
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="medium" type="button" (click)="reset()">
+        Limpiar
+      </ion-button>
+    </div>
+  </form>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Estado del formulario (debug)</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>valid:</strong> {{ profileForm.valid }}</p>
+      <p><strong>value:</strong></p>
+      <pre>{{ profileForm.value | json }}</pre>
+      <p *ngIf="lastSubmittedValue"><strong>Último submit:</strong></p>
+      <pre *ngIf="lastSubmittedValue">{{ lastSubmittedValue | json }}</pre>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

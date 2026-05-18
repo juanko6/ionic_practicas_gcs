@@ -1,0 +1,31 @@
+.alert {
+  margin: 4px 16px 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.85em;
+}
+
+.alert-danger {
+  background: rgba(235, 68, 90, 0.12);
+  color: #c62828;
+}
+
+.form-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-alias-btn {
+  margin: 8px 16px 16px;
+}
+
+pre {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

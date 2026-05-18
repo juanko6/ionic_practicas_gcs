@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input
+          type="email"
+          formControlName="email"
+          placeholder="usuario@dominio.com"
+          autocomplete="email"
+        ></ion-input>
+      </ion-item>
+      <div
+        *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched || submitted)"
+        class="alert alert-danger"
+      >
+        <p *ngIf="f['email'].hasError('required')">El email es obligatorio.</p>
+        <p *ngIf="f['email'].hasError('email')">Formato de email no válido.</p>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Contraseña</ion-label>
+        <ion-input
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+        ></ion-input>
+      </ion-item>
+      <div
+        *ngIf="f['password'].invalid && (f['password'].dirty || f['password'].touched || submitted)"
+        class="alert alert-danger"
+      >
+        <p *ngIf="f['password'].hasError('required')">La contraseña es obligatoria.</p>
+        <p *ngIf="f['password'].hasError('minlength')">
+          Mínimo {{ f['password'].errors?.['minlength']?.requiredLength }} caracteres.
+        </p>
+      </div>
+
+      <ion-item lines="none">
+        <ion-checkbox slot="start" formControlName="remember"></ion-checkbox>
+        <ion-label>Recuérdame</ion-label>
+      </ion-item>
+    </ion-list>
+
+    <div class="form-actions">
+      <ion-button expand="block" type="submit" [disabled]="!loginForm.valid">
+        Entrar
+      </ion-button>
+      <ion-button expand="block" fill="outline" color="medium" type="button" (click)="reset()">
+        Limpiar
+      </ion-button>
+    </div>
+  </form>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Estado del formulario (debug)</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>valid:</strong> {{ loginForm.valid }}</p>
+      <p><strong>value:</strong></p>
+      <pre>{{ loginForm.value | json }}</pre>
+      <p *ngIf="lastSubmittedValue"><strong>Último submit:</strong></p>
+      <pre *ngIf="lastSubmittedValue">{{ lastSubmittedValue | json }}</pre>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
