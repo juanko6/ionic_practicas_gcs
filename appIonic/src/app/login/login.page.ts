@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 
 import { UserService } from '../services/user.service';
 
@@ -31,8 +32,18 @@ export class LoginPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private userSrv: UserService
+    private userSrv: UserService,
+    private menuCtrl: MenuController
   ) {}
+
+  /**
+   * Hook de Ionic — deshabilita el menú lateral mientras el usuario
+   * no esté autenticado (requisito Práctica 4).
+   * @returns void
+   */
+  ionViewWillEnter(): void {
+    this.menuCtrl.enable(false, 'principal');
+  }
 
   /**
    * Construye el formulario reactivo con los validadores exigidos:

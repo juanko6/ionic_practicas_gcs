@@ -19,6 +19,7 @@ import { StorageService } from './services/storage.service';
     AppRoutingModule,
     ReactiveFormsModule,
     IonicStorageModule.forRoot({
+      name: 'myData',
       driverOrder: [
         Drivers.IndexedDB,
         'sqlite',

@@ -1,15 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StorageService } from '../services/storage.service';
-import { FavoriteArticle } from '../models/Article';
-
-/** Clave de storage compartida con `ArticlePage`. */
-const FAVORITES_KEY = 'favorites';
 
 /**
- * Lista los artículos marcados como favoritos por el usuario.
- * La lectura del storage se hace en `ionViewWillEnter` para garantizar
- * que al volver del detalle (donde se modifica el array) la lista
- * mostrada esté siempre actualizada.
+ * Página "My Favorites".
+ *
+ * Cumple el contrato literal del cuaderno de la Práctica 4:
+ *  - `public favorites: any[]` declarado en la clase.
+ *  - `ngOnInit` recupera del storage la clave `'favorites'`.
+ *  - `generateURL(cat, id)` devuelve `/tabs/wiki/article/<cat>/<id>`.
+ * El template renderiza cada favorito con `{{name}} ({{category}})`
+ * y enlaza al detalle mediante `[href]`.
  */
 @Component({
   selector: 'app-favorites',
@@ -17,50 +17,41 @@ const FAVORITES_KEY = 'favorites';
   styleUrls: ['favorites.page.scss'],
   standalone: false,
 })
-export class FavoritesPage {
-  /** Lista actual de favoritos persistidos. */
-  favorites: FavoriteArticle[] = [];
+export class FavoritesPage implements OnInit {
+  /** Lista de favoritos cargada desde el storage. */
+  public favorites: any[] = [];
 
-  constructor(private storage: StorageService) {}
+  constructor(private storageSrv: StorageService) {}
 
   /**
-   * Recarga la lista cada vez que la pestaña pasa a primer plano.
-   * @returns Promesa que resuelve cuando `favorites` está poblado.
+   * Carga inicial de favoritos al entrar en la página.
+   * @returns void
    */
-  async ionViewWillEnter(): Promise<void> {
-    await this.loadFavorites();
+  ngOnInit(): void {
+    this.storageSrv.get('favorites').then(data => {
+      this.favorites = (data as any[]) ?? [];
+    });
   }
 
   /**
-   * Lee el array de favoritos desde el `StorageService`.
-   * @returns Promesa que resuelve tras la lectura.
+   * Recarga la lista cada vez que la pestaña pasa a primer plano
+   * (para que aparezcan los favoritos añadidos desde la página de
+   * artículo sin recargar la app).
+   * @returns void
    */
-  private async loadFavorites(): Promise<void> {
-    this.favorites = (await this.storage.get<FavoriteArticle[]>(FAVORITES_KEY)) ?? [];
+  ionViewWillEnter(): void {
+    this.storageSrv.get('favorites').then(data => {
+      this.favorites = (data as any[]) ?? [];
+    });
   }
 
   /**
-   * Construye la ruta dinámica al detalle de un artículo guardado.
-   * Sigue la convención unificada con `wiki-routing.module.ts`:
-   * `/tabs/wiki/article/<cat>/<id>` (ej.: `/tabs/wiki/article/Planets/1`).
-   * @param article Favorito desde el que generar la ruta.
-   * @returns Cadena de ruta lista para usar como `href` / `routerLink`.
+   * Construye la URL al detalle del artículo guardado.
+   * @param cat Categoría (`People`, `Planets`, `Species`, `Starships`).
+   * @param id Identificador (uid de SWAPI) del recurso.
+   * @returns Ruta absoluta lista para `href`.
    */
-  generateURL(article: FavoriteArticle): string {
-    return `/tabs/wiki/article/${article.category}/${article.id}`;
-  }
-
-  /**
-   * Elimina un favorito directamente desde la lista.
-   * Útil para que el usuario no tenga que entrar al detalle para
-   * quitar entradas obsoletas.
-   * @param article Favorito a eliminar.
-   * @returns Promesa que resuelve cuando el storage está actualizado.
-   */
-  async remove(article: FavoriteArticle): Promise<void> {
-    this.favorites = this.favorites.filter(
-      f => !(f.id === article.id && f.category === article.category)
-    );
-    await this.storage.set(FAVORITES_KEY, this.favorites);
+  generateURL(cat: string, id: string): string {
+    return '/tabs/wiki/article/' + cat + '/' + id;
   }
 }

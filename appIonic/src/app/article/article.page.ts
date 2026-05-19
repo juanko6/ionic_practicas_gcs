@@ -120,7 +120,7 @@ export class ArticlePage implements OnInit {
     if (index >= 0) {
       favorites.splice(index, 1);
       this.isFavorite = false;
-      message = 'Eliminado de favoritos';
+      message = 'Article removed from favorites successfully';
     } else {
       favorites.push({
         id: this.id,
@@ -128,15 +128,23 @@ export class ArticlePage implements OnInit {
         category: this.category,
       });
       this.isFavorite = true;
-      message = 'Añadido a favoritos';
+      message = 'Article stored as favorite successfully';
     }
 
     await this.storage.set(FAVORITES_KEY, favorites);
+    await this.presentToast(message);
+  }
+
+  /**
+   * Presenta un toast con el mensaje indicado, tal como exige el
+   * cuaderno de la Práctica 4.
+   * @param text Mensaje a mostrar.
+   * @returns Promesa que resuelve cuando el toast se ha presentado.
+   */
+  private async presentToast(text: string): Promise<void> {
     const toast = await this.toastCtrl.create({
-      message,
-      duration: 1500,
-      position: 'bottom',
-      color: 'dark',
+      message: text,
+      duration: 2000,
     });
     await toast.present();
   }

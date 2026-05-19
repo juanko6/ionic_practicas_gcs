@@ -3,36 +3,17 @@
     <ion-buttons slot="start">
       <ion-menu-button menu="principal"></ion-menu-button>
     </ion-buttons>
-    <ion-title>Favorites</ion-title>
+    <ion-title>My Favorites</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-list *ngIf="favorites.length > 0">
+  <ion-list>
     <ion-item
-      *ngFor="let article of favorites"
-      button
-      detail="true"
-      [href]="generateURL(article)"
+      *ngFor="let fav of favorites"
+      [href]="generateURL(fav.category, fav.id)"
     >
-      <ion-icon slot="start" name="star"></ion-icon>
-      <ion-label>
-        <h2>{{ article.name }}</h2>
-        <p>{{ article.category }}</p>
-      </ion-label>
-      <ion-button
-        slot="end"
-        fill="clear"
-        color="medium"
-        (click)="remove(article); $event.stopPropagation()"
-      >
-        <ion-icon slot="icon-only" name="trash"></ion-icon>
-      </ion-button>
+      {{ fav.name }} ({{ fav.category }})
     </ion-item>
   </ion-list>
-
-  <div *ngIf="favorites.length === 0" class="empty-state ion-padding ion-text-center">
-    <ion-icon name="heart-outline" size="large"></ion-icon>
-    <p>Aún no tienes favoritos. Pulsa la estrella en cualquier artículo para guardarlo aquí.</p>
-  </div>
 </ion-content>
