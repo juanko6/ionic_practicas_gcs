@@ -10,7 +10,7 @@ import { MenuItem } from './models/MenuItem';
 })
 export class AppComponent implements OnInit {
   /** Ruta del JSON con la definición del menú lateral. */
-  private readonly MENU_URL = './assets/data/menu.json';
+  readonly menuFile: string = './assets/data/menu.json';
 
   /** Entradas del menú cargadas desde JSON (data-driven). */
   menuOptions: MenuItem[] = [];
@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
    */
   private async loadMenu(): Promise<void> {
     try {
-      const res = await fetch(this.MENU_URL);
+      const res = await fetch(this.menuFile);
       this.menuOptions = (await res.json()) as MenuItem[];
     } catch (err) {
       console.error('No se pudo cargar el menú lateral', err);

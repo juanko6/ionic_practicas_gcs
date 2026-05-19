@@ -1,17 +1,17 @@
 <ion-app>
   <ion-menu side="start" menuId="principal" contentId="main">
     <ion-header>
-      <ion-toolbar color="primary">
-        <ion-title>Menú</ion-title>
+      <ion-toolbar color="dark">
+        <ion-title>Main menu</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <ion-list>
-        <ion-menu-toggle auto-hide="true" *ngFor="let item of menuOptions">
-          <ion-item button [routerLink]="item.url" routerDirection="root">
-            <ion-icon slot="start" [name]="item.icon"></ion-icon>
-            <ion-label>{{ item.title }}</ion-label>
+        <ion-menu-toggle auto-hide="false" *ngFor="let p of menuOptions">
+          <ion-item [routerLink]="[p['url']]">
+            <ion-icon slot="start" [name]="p['icon']"></ion-icon>
+            <ion-label>{{ p['title'] }}</ion-label>
           </ion-item>
         </ion-menu-toggle>
       </ion-list>
