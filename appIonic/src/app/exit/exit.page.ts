@@ -64,10 +64,9 @@ export class ExitPage {
       /* ignored */
     }
     // Si la pestaña sigue abierta (caso esperado), redirigimos al login.
-    // Usamos `/tabs/login` porque esa es la ruta donde vive el login en
-    // `main` actualmente. Si en el futuro el login pasa a ser ruta root
-    // (PR #6, fix/practica3-auth), tambien hay que actualizar este path.
-    this.router.navigateByUrl('/tabs/login');
+    // Tras el merge del PR #6, login es ruta root (`/login`), no una
+    // pestaña dentro de `/tabs/*`.
+    this.router.navigateByUrl('/login');
   }
 
   /**
